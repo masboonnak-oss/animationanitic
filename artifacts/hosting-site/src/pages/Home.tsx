@@ -3,7 +3,7 @@ import { Footer } from "@/components/layout/Footer";
 import { Button } from "@/components/ui/button";
 import { Link, useLocation } from "wouter";
 import { motion, useScroll, useTransform } from "framer-motion";
-import { Server, Shield, Globe, Cpu, Database, Cloud as CloudIcon } from "lucide-react";
+import { Server, Shield, Globe, Cpu, Database, Cloud as CloudIcon, CreditCard, Brain, Building2 } from "lucide-react";
 import { AnimatedCards } from "@/components/ui/AnimatedCards";
 import { AuroraBackground } from "@/components/ui/AuroraBackground";
 import { ParticleField } from "@/components/ui/ParticleField";
@@ -32,8 +32,8 @@ export default function Home() {
             transition={{ duration: 1, ease: "easeOut" }}
             className="text-6xl md:text-8xl font-display font-bold tracking-tight mb-8 leading-[1.1]"
           >
-            Enterprise Cloud <br/>
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-white/80 to-white/40 drop-shadow-[0_0_15px_rgba(255,255,255,0.2)]">Infrastructure</span>
+            Sovereign Infrastructure <br/>
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-white/80 to-white/40 drop-shadow-[0_0_15px_rgba(255,255,255,0.2)]">for the Digital Age</span>
           </motion.h1>
           <motion.p 
             initial={{ opacity: 0, y: 20 }}
@@ -41,7 +41,7 @@ export default function Home() {
             transition={{ duration: 1, delay: 0.2, ease: "easeOut" }}
             className="text-xl md:text-2xl text-muted-foreground mb-12 max-w-3xl mx-auto font-light leading-relaxed drop-shadow-md"
           >
-            Deploy enterprise VPS, Dedicated Servers, GPU Servers and Cloud Solutions worldwide. Engineered for performance, built for scale.
+            Payment gateways, enterprise hosting, AI intelligence, and data center solutions — unified under one sovereign platform.
           </motion.p>
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
@@ -64,9 +64,9 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-12">
           {[
             { label: "Uptime SLA", value: "99.99%" },
-            { label: "DDoS Protection", value: "120Tbps" },
+            { label: "Payment Volume", value: "$2.4B+" },
             { label: "Global Locations", value: "18" },
-            { label: "Active Servers", value: "5000+" },
+            { label: "Active Clients", value: "12,000+" },
           ].map((stat, i) => (
             <motion.div 
               key={i}
@@ -100,12 +100,12 @@ export default function Home() {
 
         <div className="grid md:grid-cols-3 gap-6">
           {[
-            { title: "Cloud VPS", icon: Server, desc: "High-performance virtual instances with dedicated NVMe storage and guaranteed CPU resources." },
-            { title: "Dedicated Servers", icon: Cpu, desc: "Single-tenant bare metal servers for maximum performance, isolation, and control." },
-            { title: "Global Network", icon: Globe, desc: "Redundant Anycast network with premium transit blend and built-in edge protection." },
-            { title: "Block Storage", icon: Database, desc: "Highly available replicated NVMe storage volumes that attach instantly to your instances." },
-            { title: "GPU Instances", icon: Shield, desc: "Accelerated computing powered by the latest NVIDIA architectures for AI and ML workloads." },
-            { title: "Managed Kubernetes", icon: CloudIcon, desc: "Production-ready clusters deployed in minutes with automated scaling and lifecycle management." }
+            { title: "Payment Gateway", icon: CreditCard, desc: "Accept global payments with enterprise-grade security, instant settlement, and 99.99% uptime SLA. Multi-currency, fraud detection built-in.", href: "/payment" },
+            { title: "Cloud Hosting", icon: Server, desc: "High-performance VPS, Dedicated Servers, and Kubernetes clusters in 18 regions worldwide. NVMe storage, 120Tbps DDoS protection.", href: "/products" },
+            { title: "AI Platform", icon: Brain, desc: "Sovereign AI — intelligent automation, smart analytics, and an embedded AI assistant that learns your business workflows.", href: "/ai" },
+            { title: "Data Centers", icon: Database, desc: "Tier IV certified data centers with colocation, private suites, and cross-connect. 100% renewable energy. 18 global points of presence.", href: "/datacenter" },
+            { title: "Organization Management", icon: Building2, desc: "Role-based access control, multi-team workspaces, SSO, audit logs, and compliance tooling for enterprise organizations.", href: "/organizations" },
+            { title: "Global Network", icon: Globe, desc: "Redundant Anycast backbone with 120Tbps+ DDoS mitigation, premium transit blend, and sub-millisecond regional failover.", href: "/cloud" },
           ].map((prod, i) => (
             <motion.div
               key={i}
@@ -114,6 +114,7 @@ export default function Home() {
               viewport={{ once: true }}
               transition={{ delay: i * 0.1 }}
               whileHover={{ y: -8, scale: 1.02 }}
+              onClick={() => setLocation(prod.href)}
               className="p-[1px] rounded-3xl cursor-pointer group relative overflow-hidden bg-white/5 hover:bg-white/10"
             >
               <motion.div
@@ -141,7 +142,7 @@ export default function Home() {
       <section className="py-32 bg-[#0a0a0a] relative z-20 border-y border-white/5">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-20">
-            <h2 className="text-4xl md:text-5xl font-display font-bold mb-6 tracking-tight">Transparent Pricing</h2>
+            <h2 className="text-4xl md:text-5xl font-display font-bold mb-6 tracking-tight">Simple, Transparent Pricing</h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto font-light">Predictable billing with no hidden fees or bandwidth overage surprises.</p>
           </div>
 

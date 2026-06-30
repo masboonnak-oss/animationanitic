@@ -9,6 +9,7 @@ import { AnimatePresence, motion } from "framer-motion";
 // UI Additions
 import { CustomCursor } from "@/components/ui/CustomCursor";
 import { CircularNav } from "@/components/ui/CircularNav";
+import { AIAssistant } from "@/components/ui/AIAssistant";
 
 // Pages
 import Home from "@/pages/Home";
@@ -22,6 +23,10 @@ import Colocation from "@/pages/Colocation";
 import About from "@/pages/About";
 import Contact from "@/pages/Contact";
 import Status from "@/pages/Status";
+import Payment from "@/pages/Payment";
+import AIPage from "@/pages/AI";
+import DataCenter from "@/pages/DataCenter";
+import Organizations from "@/pages/Organizations";
 
 const queryClient = new QueryClient();
 
@@ -56,6 +61,10 @@ function Router() {
         <Route path="/about" component={() => <PageWrapper><About /></PageWrapper>} />
         <Route path="/contact" component={() => <PageWrapper><Contact /></PageWrapper>} />
         <Route path="/status" component={() => <PageWrapper><Status /></PageWrapper>} />
+        <Route path="/payment" component={() => <PageWrapper><Payment /></PageWrapper>} />
+        <Route path="/ai" component={() => <PageWrapper><AIPage /></PageWrapper>} />
+        <Route path="/datacenter" component={() => <PageWrapper><DataCenter /></PageWrapper>} />
+        <Route path="/organizations" component={() => <PageWrapper><Organizations /></PageWrapper>} />
         <Route component={() => <PageWrapper><NotFound /></PageWrapper>} />
       </Switch>
     </AnimatePresence>
@@ -74,6 +83,7 @@ function App() {
         <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
           <CustomCursor />
           <CircularNav />
+          <AIAssistant />
           <Router />
         </WouterRouter>
         <Toaster />

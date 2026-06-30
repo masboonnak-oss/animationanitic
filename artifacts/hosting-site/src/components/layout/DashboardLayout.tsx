@@ -1,5 +1,5 @@
 import { Link, useLocation } from "wouter";
-import { LayoutDashboard, Server, CreditCard, FileText, LifeBuoy, Settings, LogOut } from "lucide-react";
+import { LayoutDashboard, Server, CreditCard, FileText, LifeBuoy, Settings, LogOut, Brain, Building2 } from "lucide-react";
 import { useGetMe, useLogout } from "@workspace/api-client-react";
 
 export function DashboardLayout({ children }: { children: React.ReactNode }) {
@@ -18,6 +18,9 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
   const navItems = [
     { name: "Overview", href: "/dashboard", icon: LayoutDashboard },
     { name: "Servers", href: "/dashboard/servers", icon: Server },
+    { name: "Payment", href: "/dashboard/payment", icon: CreditCard },
+    { name: "AI Assistant", href: "/dashboard/ai", icon: Brain },
+    { name: "Organizations", href: "/dashboard/organizations", icon: Building2 },
     { name: "Billing", href: "/dashboard/billing", icon: CreditCard },
     { name: "Invoices", href: "/dashboard/invoices", icon: FileText },
     { name: "Support", href: "/dashboard/support", icon: LifeBuoy },
@@ -28,11 +31,12 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
     <div className="min-h-screen bg-[#111111] flex text-white">
       <aside className="w-64 border-r border-white/10 bg-[#0a0a0a] flex flex-col">
         <div className="h-16 flex items-center px-6 border-b border-white/10 shrink-0">
-          <Link href="/" className="flex items-center space-x-2">
-            <div className="w-5 h-5 bg-primary rounded-sm rotate-45 flex items-center justify-center">
-              <div className="w-1.5 h-1.5 bg-background rounded-full" />
-            </div>
-            <span className="font-display font-bold text-lg tracking-wider uppercase">Nova</span>
+          <Link href="/" className="flex items-center space-x-3">
+            <svg width="24" height="24" viewBox="0 0 28 28" fill="none">
+              <polygon points="14,2 26,8 26,20 14,26 2,20 2,8" fill="none" stroke="white" strokeWidth="1.5"/>
+              <polygon points="14,7 21,11 21,17 14,21 7,17 7,11" fill="white" fillOpacity="0.15"/>
+            </svg>
+            <span className="font-display font-bold text-lg tracking-[0.2em] uppercase">Sovereign</span>
           </Link>
         </div>
         
