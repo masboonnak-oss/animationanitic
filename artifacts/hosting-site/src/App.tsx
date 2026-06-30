@@ -5,7 +5,6 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { lazy, Suspense, useEffect, useRef, useState, createContext, useContext } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 
-import { CircularNav } from "@/components/ui/CircularNav";
 import { AIAssistant } from "@/components/ui/AIAssistant";
 
 // Route pages are code-split so the initial bundle stays small and the first
@@ -215,7 +214,6 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
-          <CircularNav />
           <AIAssistant />
           <Router />
         </WouterRouter>

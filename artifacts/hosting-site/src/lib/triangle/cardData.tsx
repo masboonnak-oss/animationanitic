@@ -1,4 +1,5 @@
 import { type ReactNode } from "react";
+import { LoginCard, RegisterCard, AdminCard } from "@/components/triangle/AuthCards";
 import {
   Activity, BarChart3, Brain, Building2, Clock, Cloud, Cpu, CreditCard, Database,
   Gauge, Globe, Home, Info, KeyRound, Layers, LayoutDashboard, Lock,
@@ -68,6 +69,8 @@ export interface CardNode {
   accentColor: string;
   icon: ReactNode;
   preview: ReactNode;
+  /** Optional richer content shown in the leaf detail panel (defaults to preview). */
+  panel?: ReactNode;
   children?: CardNode[];
 }
 
@@ -147,14 +150,22 @@ const status = cat("status", "STATUS", "Service Health", "#FF7A90", <Activity si
   leaf("s-uptime", "UPTIME", "Track Record", "#FF7A90", <Gauge size={S} />, <StatGrid color="#FF7A90" items={[{ label: "24h", value: "100%" }, { label: "7d", value: "99.99%" }, { label: "30d", value: "99.98%" }, { label: "90d", value: "99.99%" }]} />),
 ]);
 
-const login = cat("login", "LOGIN", "Access Account", "#E2E8F0", <LogIn size={S} />, [
-  leaf("l-access", "ACCESS", "Methods", "#E2E8F0", <KeyRound size={S} />, <StatList items={[{ label: "Email", value: "Yes", color: "#E2E8F0" }, { label: "SSO", value: "Yes", color: "#00F5FF" }, { label: "MFA", value: "Optional", color: "#A855F7" }, { label: "Demo", value: "Yes", color: "#34F5C5" }]} />),
-  leaf("l-security", "SECURITY", "Protection", "#E2E8F0", <Shield size={S} />, <TagGrid color="#E2E8F0" items={["TLS 1.3", "MFA", "Audit", "Lockout"]} />),
-]);
-const register = cat("register", "REGISTER", "Create Account", "#A0F0D0", <UserPlus size={S} />, [
-  leaf("r-signup", "SIGN-UP", "Onboarding", "#A0F0D0", <UserPlus size={S} />, <StatList items={[{ label: "Steps", value: "2", color: "#A0F0D0" }, { label: "Verify", value: "Email", color: "#00F5FF" }, { label: "Trial", value: "14 days", color: "#A855F7" }, { label: "Card", value: "Not required", color: "#34F5C5" }]} />),
-  leaf("r-plans", "PLANS", "Choose Tier", "#A0F0D0", <Layers size={S} />, <StatList items={[{ label: "Starter", value: "$10/mo", color: "#A0F0D0" }, { label: "Pro", value: "$40/mo", color: "#00F5FF" }, { label: "Enterprise", value: "$120/mo", color: "#A855F7" }, { label: "Custom", value: "Contact", color: "#F59E0B" }]} />),
-]);
+// Account leaves carry working forms in their detail panel.
+const accountLogin: CardNode = {
+  id: "login", title: "LOGIN", subtitle: "Access Account", accentColor: "#E2E8F0", icon: <LogIn size={S} />,
+  preview: <p className="text-xs leading-relaxed text-white/55">Sign in to manage your infrastructure. Use <span className="font-semibold text-white/80">admin / admin123</span> for the console.</p>,
+  panel: <LoginCard />,
+};
+const accountRegister: CardNode = {
+  id: "register", title: "REGISTER", subtitle: "Create Account", accentColor: "#A0F0D0", icon: <UserPlus size={S} />,
+  preview: <p className="text-xs leading-relaxed text-white/55">Create your demo account — no card required, 14-day trial.</p>,
+  panel: <RegisterCard />,
+};
+const accountAdmin: CardNode = {
+  id: "admin", title: "ADMIN", subtitle: "Control Center", accentColor: "#FFC857", icon: <ShieldCheck size={S} />,
+  preview: <p className="text-xs leading-relaxed text-white/55">Tickets, products, pages & launchpad — admin sign-in required.</p>,
+  panel: <AdminCard />,
+};
 
 // ─── Root domains ─────────────────────────────────────────────────────────────
 export const ROOT_CARDS: CardNode[] = [
@@ -163,5 +174,5 @@ export const ROOT_CARDS: CardNode[] = [
   cat("payments", "PAYMENTS", "Gateway & Wallet", "#00FFCC", <CreditCard size={S} />, [payment, topup]),
   cat("platform", "PLATFORM", "AI · Orgs · Console", "#9B59FF", <Brain size={S} />, [ai, orgs, dashboard]),
   cat("company", "COMPANY", "About · Contact · Status", "#FFB86B", <ShieldCheck size={S} />, [about, contact, status]),
-  cat("account", "ACCOUNT", "Sign in / Register", "#7CFFCB", <LogIn size={S} />, [login, register]),
+  cat("account", "ACCOUNT", "Sign in · Register · Admin", "#7CFFCB", <LogIn size={S} />, [accountLogin, accountRegister, accountAdmin]),
 ];

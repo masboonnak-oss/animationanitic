@@ -1,5 +1,6 @@
 import { useState, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { ArrowLeft } from "lucide-react";
 import DrillCarousel from "./DrillCarousel";
 import { ROOT_CARDS, type CardNode } from "@/lib/triangle/cardData";
 
@@ -67,7 +68,7 @@ function LeafPanel({ card, onClose }: { card: CardNode; onClose: () => void }) {
           </div>
         </div>
 
-        <div className="text-sm">{card.preview}</div>
+        <div className="text-sm">{card.panel ?? card.preview}</div>
 
         <div className="mt-6 text-center text-[10px] text-white/28 tracking-[0.22em]">CLICK OUTSIDE TO CLOSE</div>
       </motion.div>
@@ -120,26 +121,28 @@ export default function TriangleCore() {
 
   return (
     <div className="absolute inset-0 flex flex-col items-center justify-center overflow-hidden">
-      {/* Breadcrumb + back */}
+      {/* Back button + breadcrumb — pinned top-left so it never overlaps the
+          centered brand label. */}
       <AnimatePresence>
         {!isRoot && (
           <motion.div
             key="breadcrumb"
-            initial={{ opacity: 0, y: -14 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -14 }}
-            transition={{ duration: 0.3 }}
-            className="absolute top-5 left-0 right-0 flex items-center justify-center gap-3 z-30 pointer-events-none"
+            initial={{ opacity: 0, x: -14 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -14 }}
+            transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
+            className="absolute top-4 left-4 z-40 flex items-center gap-3 sm:top-5 sm:left-5"
           >
             <button
               onClick={goBack}
-              className="pointer-events-auto flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-bold tracking-[0.2em] transition-opacity duration-200 hover:opacity-100"
-              style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.14)", color: "rgba(255,255,255,0.58)" }}
+              className="group flex items-center gap-2 rounded-full px-4 py-2 text-xs font-bold tracking-[0.18em] text-white/70 backdrop-blur-md transition-colors duration-200 hover:text-white"
+              style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.16)" }}
               data-testid="button-back"
             >
-              ← BACK
+              <ArrowLeft className="h-4 w-4 transition-transform duration-200 group-hover:-translate-x-0.5" />
+              BACK
             </button>
-            <div className="flex items-center gap-1.5 text-[10px] tracking-[0.2em]">
+            <div className="hidden items-center gap-1.5 text-[10px] tracking-[0.2em] sm:flex">
               {stack.map((level, i) => (
                 <span key={i} className="flex items-center gap-1.5">
                   {i > 0 && <span className="text-white/20">›</span>}
