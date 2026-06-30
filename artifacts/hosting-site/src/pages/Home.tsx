@@ -1,36 +1,50 @@
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { Button } from "@/components/ui/button";
-import { Link, useLocation } from "wouter";
-import { motion, useScroll, useTransform } from "framer-motion";
-import { Server, Shield, Globe, Cpu, Database, Cloud as CloudIcon, CreditCard, Brain, Building2 } from "lucide-react";
+import { useLocation } from "wouter";
+import { motion } from "framer-motion";
+import { useEffect, useState } from "react";
+import { Server, Globe, Database, CreditCard, Brain, Building2 } from "lucide-react";
 import { AnimatedCards } from "@/components/ui/AnimatedCards";
 import { AuroraBackground } from "@/components/ui/AuroraBackground";
 import { ParticleField } from "@/components/ui/ParticleField";
 import { MagneticButton } from "@/components/ui/MagneticButton";
+import { LogoDecor } from "@/components/ui/LogoDecor";
+import { getProducts, type ProductPlan } from "@/lib/admin-store";
 
 export default function Home() {
-  const { scrollYProgress } = useScroll();
-  const y = useTransform(scrollYProgress, [0, 1], [0, 200]);
   const [_, setLocation] = useLocation();
+  const [pricingPlans, setPricingPlans] = useState<ProductPlan[]>(() => getProducts().filter((product) => product.active).slice(0, 3));
+
+  useEffect(() => {
+    const syncProducts = () => setPricingPlans(getProducts().filter((product) => product.active).slice(0, 3));
+    window.addEventListener("sovereign-admin-store", syncProducts);
+    window.addEventListener("storage", syncProducts);
+    return () => {
+      window.removeEventListener("sovereign-admin-store", syncProducts);
+      window.removeEventListener("storage", syncProducts);
+    };
+  }, []);
 
   return (
     <div className="min-h-screen bg-[#111111] text-white overflow-hidden">
       <Navbar />
       
       {/* Hero Section */}
-      <section className="relative h-screen flex items-center justify-center overflow-hidden">
+      <section className="relative flex min-h-[100svh] items-center justify-center overflow-hidden px-4 py-28 sm:px-6">
         <AuroraBackground />
         <div className="absolute inset-0 bg-gradient-to-b from-[#111111]/10 via-[#111111]/60 to-[#0a0a0a] z-0" />
+        <LogoDecor className="left-1/2 top-1/2 z-[1] h-[520px] w-[520px] -translate-x-1/2 -translate-y-1/2 opacity-70" glowClassName="bg-[var(--neon-blue)]/10" />
+        <LogoDecor className="-left-28 bottom-8 z-[1] h-72 w-72 rotate-[-18deg] opacity-35" glowClassName="bg-[var(--neon-purple)]/10" />
         <ParticleField />
         <AnimatedCards />
         
-        <div className="relative z-10 text-center max-w-5xl px-6 pt-20 pointer-events-none">
+        <div className="relative z-10 max-w-5xl text-center pointer-events-none">
           <motion.h1 
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, ease: "easeOut" }}
-            className="text-6xl md:text-8xl font-display font-bold tracking-tight mb-8 leading-[1.1]"
+            className="mb-7 text-5xl font-bold leading-[1.03] tracking-tight sm:text-6xl md:text-8xl"
           >
             Sovereign Infrastructure <br/>
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-white/80 to-white/40 drop-shadow-[0_0_15px_rgba(255,255,255,0.2)]">for the Digital Age</span>
@@ -39,21 +53,21 @@ export default function Home() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, delay: 0.2, ease: "easeOut" }}
-            className="text-xl md:text-2xl text-muted-foreground mb-12 max-w-3xl mx-auto font-light leading-relaxed drop-shadow-md"
+            className="mx-auto mb-10 max-w-3xl text-base font-light leading-relaxed text-muted-foreground drop-shadow-md sm:text-xl md:text-2xl"
           >
-            Payment gateways, enterprise hosting, AI intelligence, and data center solutions — unified under one sovereign platform.
+            Payment gateways, enterprise hosting, AI intelligence, and data center solutions - unified under one sovereign platform.
           </motion.p>
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, delay: 0.4, ease: "easeOut" }}
-            className="flex items-center justify-center space-x-6 pointer-events-auto"
+            className="flex flex-col items-center justify-center gap-4 pointer-events-auto sm:flex-row sm:gap-6"
           >
             <MagneticButton onClick={() => setLocation("/register")}>
-              <div className="flex items-center justify-center rounded-full px-10 text-lg h-14 bg-white text-black font-medium hover:bg-gray-200 transition-all cursor-pointer">Start Now</div>
+              <div className="flex h-14 min-w-44 items-center justify-center rounded-full bg-white px-10 text-base font-medium text-black transition-all hover:bg-gray-200 sm:text-lg">Start Now</div>
             </MagneticButton>
-            <MagneticButton onClick={() => setLocation("/about")}>
-              <div className="flex items-center justify-center rounded-full px-10 text-lg h-14 border border-white/20 bg-black/20 backdrop-blur-sm text-white font-medium hover:bg-white/10 hover:border-white/40 transition-all cursor-pointer">Pricing</div>
+            <MagneticButton onClick={() => setLocation("/products")}>
+              <div className="flex h-14 min-w-44 items-center justify-center rounded-full border border-white/20 bg-black/20 px-10 text-base font-medium text-white backdrop-blur-sm transition-all hover:border-white/40 hover:bg-white/10 sm:text-lg">Pricing</div>
             </MagneticButton>
           </motion.div>
         </div>
@@ -102,7 +116,7 @@ export default function Home() {
           {[
             { title: "Payment Gateway", icon: CreditCard, desc: "Accept global payments with enterprise-grade security, instant settlement, and 99.99% uptime SLA. Multi-currency, fraud detection built-in.", href: "/payment" },
             { title: "Cloud Hosting", icon: Server, desc: "High-performance VPS, Dedicated Servers, and Kubernetes clusters in 18 regions worldwide. NVMe storage, 120Tbps DDoS protection.", href: "/products" },
-            { title: "AI Platform", icon: Brain, desc: "Sovereign AI — intelligent automation, smart analytics, and an embedded AI assistant that learns your business workflows.", href: "/ai" },
+            { title: "AI Platform", icon: Brain, desc: "Sovereign AI - intelligent automation, smart analytics, and an embedded AI assistant that learns your business workflows.", href: "/ai" },
             { title: "Data Centers", icon: Database, desc: "Tier IV certified data centers with colocation, private suites, and cross-connect. 100% renewable energy. 18 global points of presence.", href: "/datacenter" },
             { title: "Organization Management", icon: Building2, desc: "Role-based access control, multi-team workspaces, SSO, audit logs, and compliance tooling for enterprise organizations.", href: "/organizations" },
             { title: "Global Network", icon: Globe, desc: "Redundant Anycast backbone with 120Tbps+ DDoS mitigation, premium transit blend, and sub-millisecond regional failover.", href: "/cloud" },
@@ -147,13 +161,13 @@ export default function Home() {
           </div>
 
           <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-            {[
-              { name: "Starter", price: 10, desc: "Perfect for staging and small applications.", features: ["2 vCPU", "4GB RAM", "50GB NVMe", "1TB Bandwidth"] },
-              { name: "Pro", price: 40, desc: "High performance for production workloads.", features: ["4 vCPU", "16GB RAM", "200GB NVMe", "4TB Bandwidth"], popular: true },
-              { name: "Enterprise", price: 120, desc: "Dedicated resources for intensive applications.", features: ["8 vCPU Dedicated", "32GB RAM", "500GB NVMe", "10TB Bandwidth"] }
-            ].map((tier, i) => (
-              <div key={i} className={`p-10 rounded-3xl relative border ${tier.popular ? 'bg-white/5 border-white/20 scale-105 shadow-[0_0_50px_rgba(0,212,255,0.1)]' : 'bg-[#161616] border-white/5'} overflow-hidden group`}>
-                {tier.popular && (
+            {pricingPlans.map((tier, i) => {
+              const popular = tier.badge.toLowerCase() === "popular" || i === 1;
+              const features = [`${tier.vcpu} vCPU`, `${tier.ram}GB RAM`, `${tier.storage}GB NVMe`, `${tier.bandwidth}TB Bandwidth`];
+
+              return (
+              <div key={tier.id} className={`p-10 rounded-3xl relative border ${popular ? 'bg-white/5 border-white/20 scale-105 shadow-[0_0_50px_rgba(0,212,255,0.1)]' : 'bg-[#161616] border-white/5'} overflow-hidden group`}>
+                {popular && (
                   <>
                     <motion.div
                       className="absolute inset-[-100%] z-0 rounded-full"
@@ -170,25 +184,25 @@ export default function Home() {
                 )}
                 <div className="relative z-10">
                   <h3 className="text-2xl font-bold mb-2">{tier.name}</h3>
-                  <p className="text-sm text-muted-foreground mb-8 min-h-[40px]">{tier.desc}</p>
+                  <p className="text-sm text-muted-foreground mb-8 min-h-[40px]">{tier.description}</p>
                   <div className="mb-8">
                     <span className="text-5xl font-display font-bold">${tier.price}</span>
                     <span className="text-muted-foreground">/mo</span>
                   </div>
                   <ul className="space-y-4 mb-10">
-                    {tier.features.map((f, j) => (
+                    {features.map((f, j) => (
                       <li key={j} className="flex items-center text-sm">
-                        <div className={`w-1.5 h-1.5 rounded-full mr-3 ${tier.popular ? 'bg-[var(--neon-blue)] shadow-[0_0_8px_var(--neon-blue)]' : 'bg-white opacity-60'}`} />
+                        <div className={`w-1.5 h-1.5 rounded-full mr-3 ${popular ? 'bg-[var(--neon-blue)] shadow-[0_0_8px_var(--neon-blue)]' : 'bg-white opacity-60'}`} />
                         {f}
                       </li>
                     ))}
                   </ul>
-                  <Button className={`w-full h-12 rounded-xl font-medium ${tier.popular ? 'bg-white text-black hover:bg-gray-200' : 'bg-white/10 hover:bg-white/20'}`}>
+                  <Button onClick={() => setLocation("/register")} className={`w-full h-12 rounded-xl font-medium ${popular ? 'bg-white text-black hover:bg-gray-200' : 'bg-white/10 hover:bg-white/20'}`}>
                     Deploy Instance
                   </Button>
                 </div>
               </div>
-            ))}
+            )})}
           </div>
         </div>
       </section>

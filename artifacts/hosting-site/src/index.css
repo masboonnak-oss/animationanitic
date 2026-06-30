@@ -133,12 +133,49 @@
   }
   html, body {
     cursor: auto;
+    scroll-behavior: smooth;
   }
   body {
     @apply font-sans antialiased bg-background text-foreground;
+    text-rendering: geometricPrecision;
+    -webkit-font-smoothing: antialiased;
   }
   h1, h2, h3, h4, h5, h6 {
     @apply font-display tracking-tight;
+  }
+}
+
+::selection {
+  background: rgba(0, 212, 255, 0.32);
+  color: white;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0a0a0a;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #303030;
+  border: 2px solid #0a0a0a;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #4a4a4a;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html, body {
+    scroll-behavior: auto;
+  }
+
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }
 
@@ -150,4 +187,111 @@ body::after {
   z-index: 9999;
   opacity: 0.025;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+}
+
+/* ─────────────────────────── Orbit navigation ─────────────────────────── */
+
+/* Registered custom property so --orbit-accent transitions smoothly,
+   giving panels/core/CTA animated "dynamic lighting" as focus changes. */
+@property --orbit-accent {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #00d4ff;
+}
+
+.orbit-stage,
+.orbit-cta {
+  transition: --orbit-accent 600ms ease;
+}
+
+@keyframes orbit-gradient-pan {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.orbit-animated-gradient {
+  background-size: 200% 200%;
+  animation: orbit-gradient-pan 22s ease-in-out infinite;
+}
+
+@keyframes orbit-core-spin {
+  to { transform: rotate(360deg); }
+}
+
+.orbit-core-ring {
+  animation: orbit-core-spin 28s linear infinite;
+}
+
+@keyframes orbit-bloom-pulse {
+  0%, 100% { opacity: 0.12; transform: translate(-50%, -50%) scale(1); }
+  50% { opacity: 0.22; transform: translate(-50%, -50%) scale(1.06); }
+}
+
+.orbit-bloom {
+  animation: orbit-bloom-pulse 7s ease-in-out infinite;
+}
+
+.orbit-arrow {
+  display: grid;
+  place-items: center;
+  height: 3rem;
+  width: 3rem;
+  border-radius: 9999px;
+  color: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  transition: transform 0.25s ease, background-color 0.25s ease, border-color 0.25s ease;
+}
+.orbit-arrow:hover {
+  transform: translateY(-50%) scale(1.08);
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.25);
+  color: #fff;
+}
+.orbit-arrow:active {
+  transform: translateY(-50%) scale(0.96);
+}
+
+.orbit-cta {
+  position: relative;
+  height: 3rem;
+  padding: 0 2rem;
+  border-radius: 9999px;
+  font-weight: 600;
+  color: #05060c;
+  background: var(--orbit-accent);
+  box-shadow: 0 0 36px -4px var(--orbit-accent), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  transition: transform 0.2s ease, box-shadow 0.3s ease, filter 0.3s ease;
+}
+.orbit-cta:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.06);
+  box-shadow: 0 0 54px 0 var(--orbit-accent), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+.orbit-cta:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.orbit-dot {
+  height: 0.5rem;
+  width: 0.5rem;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.25);
+  transition: width 0.3s ease, background-color 0.3s ease;
+}
+.orbit-dot[data-active="true"] {
+  width: 1.5rem;
+  background: var(--orbit-accent);
+  box-shadow: 0 0 12px var(--orbit-accent);
+}
+
+/* Honor reduced-motion: freeze the ambient orbit animations. */
+@media (prefers-reduced-motion: reduce) {
+  .orbit-animated-gradient,
+  .orbit-core-ring,
+  .orbit-bloom {
+    animation: none !important;
+  }
 }

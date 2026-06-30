@@ -1,34 +1,40 @@
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
-import { useGetDashboardSummary, useGetUsageHistory, useListServers } from "@workspace/api-client-react";
 import { Server, Activity, DollarSign, LifeBuoy } from "lucide-react";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
-export default function Dashboard() {
-  const { data: summary, isLoading: loadingSummary } = useGetDashboardSummary();
-  const { data: history, isLoading: loadingHistory } = useGetUsageHistory();
-  const { data: servers, isLoading: loadingServers } = useListServers();
+const summary = {
+  totalServers: 8,
+  runningServers: 7,
+  monthlySpend: 420,
+  openTickets: 1,
+};
 
-  if (loadingSummary || loadingHistory || loadingServers) {
-    return (
-      <DashboardLayout>
-        <div className="animate-pulse space-y-6">
-          <div className="h-8 bg-white/5 rounded w-48 mb-8" />
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            {[1, 2, 3, 4].map(i => <div key={i} className="h-24 bg-white/5 rounded-xl" />)}
-          </div>
-          <div className="h-64 bg-white/5 rounded-xl" />
-        </div>
-      </DashboardLayout>
-    );
-  }
+const history = [
+  { date: "2026-06-24", cpu: 38, ram: 46 },
+  { date: "2026-06-25", cpu: 44, ram: 50 },
+  { date: "2026-06-26", cpu: 41, ram: 53 },
+  { date: "2026-06-27", cpu: 58, ram: 61 },
+  { date: "2026-06-28", cpu: 52, ram: 57 },
+  { date: "2026-06-29", cpu: 64, ram: 66 },
+  { date: "2026-06-30", cpu: 49, ram: 58 },
+];
+
+const servers = [
+  { id: 1, name: "edge-bkk-01", ip: "203.0.113.24", type: "vps", location: "Bangkok", status: "running" },
+  { id: 2, name: "api-sgp-02", ip: "198.51.100.18", type: "vps", location: "Singapore", status: "running" },
+  { id: 3, name: "gpu-tokyo-lab", ip: "192.0.2.88", type: "gpu", location: "Tokyo", status: "provisioning" },
+  { id: 4, name: "billing-core", ip: "203.0.113.52", type: "dedicated", location: "Frankfurt", status: "running" },
+];
+
+export default function Dashboard() {
 
   const statCards = [
-    { title: "Total Servers", value: summary?.totalServers || 0, icon: Server },
-    { title: "Running", value: summary?.runningServers || 0, icon: Activity, color: "text-green-500" },
-    { title: "Monthly Spend", value: `$${summary?.monthlySpend || 0}`, icon: DollarSign },
-    { title: "Open Tickets", value: summary?.openTickets || 0, icon: LifeBuoy, color: "text-orange-500" },
+    { title: "Total Servers", value: summary.totalServers, icon: Server },
+    { title: "Running", value: summary.runningServers, icon: Activity, color: "text-green-500" },
+    { title: "Monthly Spend", value: `$${summary.monthlySpend}`, icon: DollarSign },
+    { title: "Open Tickets", value: summary.openTickets, icon: LifeBuoy, color: "text-orange-500" },
   ];
 
   return (
@@ -59,7 +65,7 @@ export default function Dashboard() {
           <h3 className="text-lg font-bold mb-6">Resource Usage</h3>
           <div className="h-[300px] w-full">
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={history || []} margin={{ top: 5, right: 0, left: -20, bottom: 0 }}>
+              <LineChart data={history} margin={{ top: 5, right: 0, left: -20, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#333" vertical={false} />
                 <XAxis dataKey="date" stroke="#666" tick={{fill: '#666', fontSize: 12}} tickFormatter={(val) => new Date(val).toLocaleDateString(undefined, {month:'short', day:'numeric'})} />
                 <YAxis stroke="#666" tick={{fill: '#666', fontSize: 12}} />
@@ -101,7 +107,7 @@ export default function Dashboard() {
               </tr>
             </thead>
             <tbody className="divide-y divide-white/10">
-              {(servers || []).map((server) => (
+              {servers.map((server) => (
                 <tr key={server.id} className="hover:bg-white/5 transition-colors">
                   <td className="px-6 py-4 font-medium">{server.name}</td>
                   <td className="px-6 py-4 font-mono text-xs text-muted-foreground">{server.ip}</td>
@@ -118,11 +124,6 @@ export default function Dashboard() {
                   </td>
                 </tr>
               ))}
-              {(!servers || servers.length === 0) && (
-                <tr>
-                  <td colSpan={5} className="px-6 py-8 text-center text-muted-foreground">No servers found. Deploy your first server.</td>
-                </tr>
-              )}
             </tbody>
           </table>
         </div>

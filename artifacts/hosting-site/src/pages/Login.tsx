@@ -3,16 +3,18 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { motion } from "framer-motion";
-import { useLogin } from "@workspace/api-client-react";
+import { useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { AnimatedCards } from "@/components/ui/AnimatedCards";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
+import { demoAdminLogin, demoLogin, getDemoUser, saveDemoSession } from "@/lib/demo-auth";
+import { LogoChip, LogoDecor } from "@/components/ui/LogoDecor";
 
 const loginSchema = z.object({
-  email: z.string().email(),
+  email: z.string().min(1, "Enter your email or username"),
   password: z.string().min(6),
   rememberMe: z.boolean().optional(),
 });
@@ -20,7 +22,13 @@ const loginSchema = z.object({
 export default function Login() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
-  const loginMutation = useLogin();
+
+  useEffect(() => {
+    const user = getDemoUser();
+    if (user) {
+      setLocation(user.role === "admin" ? "/admin" : "/dashboard");
+    }
+  }, [setLocation]);
 
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
@@ -32,53 +40,48 @@ export default function Login() {
   });
 
   const onSubmit = (data: z.infer<typeof loginSchema>) => {
-    loginMutation.mutate({ data }, {
-      onSuccess: () => {
-        setLocation("/dashboard");
-      },
-      onError: () => {
-        toast({
-          variant: "destructive",
-          title: "Login failed",
-          description: "Invalid email or password",
-        });
-      }
+    const isAdmin = data.email.trim().toLowerCase() === "admin" && data.password === "admin123";
+    const user = isAdmin ? demoAdminLogin() : demoLogin(data.email);
+    saveDemoSession(user);
+    toast({
+      title: "Signed in",
+      description: `Welcome back, ${user.name}.`,
     });
+    setLocation(user.role === "admin" ? "/admin" : "/dashboard");
   };
 
   return (
-    <div className="min-h-screen bg-[#111111] flex items-center justify-center relative overflow-hidden">
+    <div className="relative flex min-h-[100svh] items-center justify-center overflow-hidden bg-[#111111] px-4 py-24 sm:px-6">
       <div className="absolute inset-0 opacity-30 blur-sm pointer-events-none">
         <AnimatedCards />
       </div>
+      <LogoDecor className="right-[-120px] top-20 h-80 w-80 opacity-50" glowClassName="bg-[var(--neon-blue)]/12" />
 
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="w-full max-w-md p-8 rounded-3xl bg-[#1a1a1a]/80 backdrop-blur-xl border border-white/10 shadow-2xl relative z-10 before:absolute before:inset-0 before:-z-10 before:rounded-3xl before:bg-gradient-to-br before:from-white/10 before:to-transparent before:p-[1px] before:content-[''] before:[mask-image:linear-gradient(black,black)] before:[mask-composite:exclude]"
+        className="relative z-10 w-full max-w-md rounded-3xl border border-white/10 bg-[#1a1a1a]/80 p-5 shadow-2xl backdrop-blur-xl before:absolute before:inset-0 before:-z-10 before:rounded-3xl before:bg-gradient-to-br before:from-white/10 before:to-transparent before:p-[1px] before:content-[''] before:[mask-image:linear-gradient(black,black)] before:[mask-composite:exclude] sm:p-8"
       >
         <div className="flex justify-center mb-8">
           <Link href="/" className="flex items-center space-x-2">
-            <div className="w-6 h-6 bg-primary rounded-sm rotate-45 flex items-center justify-center">
-              <div className="w-2 h-2 bg-background rounded-full" />
-            </div>
-            <span className="font-display font-bold text-2xl tracking-wider uppercase">Nova</span>
+            <LogoChip className="h-9 w-9" />
+            <span className="font-display font-bold text-2xl tracking-wider uppercase">Sovereign</span>
           </Link>
         </div>
 
-        <h2 className="text-2xl font-bold text-center mb-6">Sign in to Nova</h2>
+        <h2 className="mb-6 text-center text-2xl font-bold">Sign in to Sovereign</h2>
 
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
-            <Input id="email" type="email" placeholder="name@company.com" {...form.register("email")} className="bg-black/50 border-white/10 focus-visible:ring-white/20" />
+            <Label htmlFor="email">Email or username</Label>
+            <Input id="email" placeholder="admin or name@company.com" {...form.register("email")} className="bg-black/50 border-white/10 focus-visible:ring-white/20" />
             {form.formState.errors.email && <p className="text-sm text-red-500">{form.formState.errors.email.message}</p>}
           </div>
 
           <div className="space-y-2">
             <div className="flex justify-between items-center">
               <Label htmlFor="password">Password</Label>
-              <a href="#" className="text-xs text-muted-foreground hover:text-white transition-colors">Forgot Password?</a>
+              <Link href="/contact" className="text-xs text-muted-foreground hover:text-white transition-colors">Forgot Password?</Link>
             </div>
             <Input id="password" type="password" {...form.register("password")} className="bg-black/50 border-white/10 focus-visible:ring-white/20" />
             {form.formState.errors.password && <p className="text-sm text-red-500">{form.formState.errors.password.message}</p>}
@@ -91,8 +94,8 @@ export default function Login() {
             </label>
           </div>
 
-          <Button type="submit" className="w-full h-11 bg-white text-black hover:bg-white/90 font-medium" disabled={loginMutation.isPending}>
-            {loginMutation.isPending ? "Signing in..." : "Login"}
+          <Button type="submit" className="w-full h-11 bg-white text-black hover:bg-white/90 font-medium">
+            Login
           </Button>
         </form>
 
@@ -103,10 +106,20 @@ export default function Login() {
         </div>
 
         <div className="space-y-3">
-          <Button variant="outline" className="w-full h-11 border-white/10 bg-white/5 hover:bg-white/10 text-white">
+          <Button type="button" onClick={() => {
+            const user = demoLogin("demo@sovereign.local");
+            saveDemoSession(user);
+            toast({ title: "Demo session ready", description: "Signed in with a sample account." });
+            setLocation("/dashboard");
+          }} variant="outline" className="w-full h-11 border-white/10 bg-white/5 hover:bg-white/10 text-white">
             Continue with Google
           </Button>
-          <Button variant="outline" className="w-full h-11 border-white/10 bg-white/5 hover:bg-white/10 text-white">
+          <Button type="button" onClick={() => {
+            const user = demoLogin("builder@sovereign.local");
+            saveDemoSession(user);
+            toast({ title: "Demo session ready", description: "Signed in with a sample account." });
+            setLocation("/dashboard");
+          }} variant="outline" className="w-full h-11 border-white/10 bg-white/5 hover:bg-white/10 text-white">
             Continue with GitHub
           </Button>
         </div>
