@@ -1,9 +1,14 @@
-import { Switch, Route, Router as WouterRouter } from "wouter";
+import { Switch, Route, Router as WouterRouter, useLocation } from "wouter";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/not-found";
 import { useEffect } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+
+// UI Additions
+import { CustomCursor } from "@/components/ui/CustomCursor";
+import { CircularNav } from "@/components/ui/CircularNav";
 
 // Pages
 import Home from "@/pages/Home";
@@ -20,22 +25,40 @@ import Status from "@/pages/Status";
 
 const queryClient = new QueryClient();
 
-function Router() {
+function PageWrapper({ children }: { children: React.ReactNode }) {
   return (
-    <Switch>
-      <Route path="/" component={Home} />
-      <Route path="/login" component={Login} />
-      <Route path="/register" component={Register} />
-      <Route path="/dashboard" component={Dashboard} />
-      <Route path="/products" component={Products} />
-      <Route path="/dedicated" component={Dedicated} />
-      <Route path="/cloud" component={Cloud} />
-      <Route path="/colocation" component={Colocation} />
-      <Route path="/about" component={About} />
-      <Route path="/contact" component={Contact} />
-      <Route path="/status" component={Status} />
-      <Route component={NotFound} />
-    </Switch>
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20 }}
+      transition={{ duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
+      className="w-full min-h-screen"
+    >
+      {children}
+    </motion.div>
+  );
+}
+
+function Router() {
+  const [location] = useLocation();
+  
+  return (
+    <AnimatePresence mode="wait" initial={false}>
+      <Switch location={location} key={location}>
+        <Route path="/" component={() => <PageWrapper><Home /></PageWrapper>} />
+        <Route path="/login" component={() => <PageWrapper><Login /></PageWrapper>} />
+        <Route path="/register" component={() => <PageWrapper><Register /></PageWrapper>} />
+        <Route path="/dashboard" component={() => <PageWrapper><Dashboard /></PageWrapper>} />
+        <Route path="/products" component={() => <PageWrapper><Products /></PageWrapper>} />
+        <Route path="/dedicated" component={() => <PageWrapper><Dedicated /></PageWrapper>} />
+        <Route path="/cloud" component={() => <PageWrapper><Cloud /></PageWrapper>} />
+        <Route path="/colocation" component={() => <PageWrapper><Colocation /></PageWrapper>} />
+        <Route path="/about" component={() => <PageWrapper><About /></PageWrapper>} />
+        <Route path="/contact" component={() => <PageWrapper><Contact /></PageWrapper>} />
+        <Route path="/status" component={() => <PageWrapper><Status /></PageWrapper>} />
+        <Route component={() => <PageWrapper><NotFound /></PageWrapper>} />
+      </Switch>
+    </AnimatePresence>
   );
 }
 
@@ -49,6 +72,8 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
+          <CustomCursor />
+          <CircularNav />
           <Router />
         </WouterRouter>
         <Toaster />
