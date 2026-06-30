@@ -3,15 +3,13 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/not-found";
-import { useEffect } from "react";
+import { useEffect, useRef, useState, createContext, useContext } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 
-// UI Additions
 import { CustomCursor } from "@/components/ui/CustomCursor";
 import { CircularNav } from "@/components/ui/CircularNav";
 import { AIAssistant } from "@/components/ui/AIAssistant";
 
-// Pages
 import Home from "@/pages/Home";
 import Login from "@/pages/Login";
 import Register from "@/pages/Register";
@@ -30,13 +28,87 @@ import Organizations from "@/pages/Organizations";
 
 const queryClient = new QueryClient();
 
+/**
+ * 2D spatial map of pages.
+ * Think of it as a city grid — navigating between pages
+ * slides the viewport in the direction of the destination.
+ *
+ *           /status (-0.5,-2)      /ai (0,-1)     /datacenter (0.5,-1)
+ *
+ * /login (-1,0)     /  (0,0)    /products (1,0)   /dedicated (2,0)
+ *
+ *  /organizations(-1,0.5)       /cloud (1,-0.5)   /colocation (1.5,0.5)
+ *
+ *  /payment (-1.5,0)            /about (0,1)      /contact (1,1)
+ *
+ *                              /register (-0.5,1.5)
+ *                              /dashboard (2.5,0)
+ */
+const PAGE_POSITIONS: Record<string, [number, number]> = {
+  "/":              [0,    0   ],
+  "/products":      [1,    0   ],
+  "/dedicated":     [2,    0   ],
+  "/cloud":         [1,   -0.5 ],
+  "/colocation":    [1.5,  0.5 ],
+  "/payment":       [-1.5, 0   ],
+  "/ai":            [0,   -1   ],
+  "/datacenter":    [0.5, -1   ],
+  "/organizations": [-1,   0.5 ],
+  "/about":         [0,    1   ],
+  "/contact":       [1,    1   ],
+  "/status":        [-0.5,-2   ],
+  "/login":         [-1,   0   ],
+  "/register":      [-0.5, 1.5 ],
+  "/dashboard":     [2.5,  0   ],
+};
+
+function getSlideDir(from: string, to: string): [number, number] {
+  const [fx, fy] = PAGE_POSITIONS[from] ?? [0, 0];
+  const [tx, ty] = PAGE_POSITIONS[to]   ?? [0, 0];
+  let dx = tx - fx;
+  let dy = ty - fy;
+  const mag = Math.sqrt(dx * dx + dy * dy) || 1;
+  return [dx / mag, dy / mag];
+}
+
+const DirectionCtx = createContext<[number, number]>([1, 0]);
+
+const SLIDE_VW = 60;
+const SLIDE_VH = 60;
+
 function PageWrapper({ children }: { children: React.ReactNode }) {
+  const [dx, dy] = useContext(DirectionCtx);
+
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20 }}
-      transition={{ duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
+      initial={{
+        x: `${dx * SLIDE_VW}vw`,
+        y: `${dy * SLIDE_VH}vh`,
+        opacity: 0,
+        scale: 0.94,
+        rotateY: dx * 6,
+        rotateX: -dy * 4,
+      }}
+      animate={{
+        x: 0, y: 0, opacity: 1, scale: 1, rotateY: 0, rotateX: 0,
+      }}
+      exit={{
+        x: `${-dx * SLIDE_VW}vw`,
+        y: `${-dy * SLIDE_VH}vh`,
+        opacity: 0,
+        scale: 0.94,
+        rotateY: -dx * 6,
+        rotateX: dy * 4,
+      }}
+      transition={{
+        type: "spring",
+        stiffness: 260,
+        damping: 26,
+        mass: 0.9,
+        opacity: { duration: 0.18, ease: "easeOut" },
+        scale:   { duration: 0.35, ease: "easeOut" },
+      }}
+      style={{ perspective: "1400px", transformStyle: "preserve-3d" }}
       className="w-full min-h-screen"
     >
       {children}
@@ -46,33 +118,43 @@ function PageWrapper({ children }: { children: React.ReactNode }) {
 
 function Router() {
   const [location] = useLocation();
-  
+  const prevRef = useRef(location);
+  const [dir, setDir] = useState<[number, number]>([1, 0]);
+
+  useEffect(() => {
+    if (prevRef.current !== location) {
+      setDir(getSlideDir(prevRef.current, location));
+      prevRef.current = location;
+    }
+  }, [location]);
+
   return (
-    <AnimatePresence mode="wait" initial={false}>
-      <Switch location={location} key={location}>
-        <Route path="/" component={() => <PageWrapper><Home /></PageWrapper>} />
-        <Route path="/login" component={() => <PageWrapper><Login /></PageWrapper>} />
-        <Route path="/register" component={() => <PageWrapper><Register /></PageWrapper>} />
-        <Route path="/dashboard" component={() => <PageWrapper><Dashboard /></PageWrapper>} />
-        <Route path="/products" component={() => <PageWrapper><Products /></PageWrapper>} />
-        <Route path="/dedicated" component={() => <PageWrapper><Dedicated /></PageWrapper>} />
-        <Route path="/cloud" component={() => <PageWrapper><Cloud /></PageWrapper>} />
-        <Route path="/colocation" component={() => <PageWrapper><Colocation /></PageWrapper>} />
-        <Route path="/about" component={() => <PageWrapper><About /></PageWrapper>} />
-        <Route path="/contact" component={() => <PageWrapper><Contact /></PageWrapper>} />
-        <Route path="/status" component={() => <PageWrapper><Status /></PageWrapper>} />
-        <Route path="/payment" component={() => <PageWrapper><Payment /></PageWrapper>} />
-        <Route path="/ai" component={() => <PageWrapper><AIPage /></PageWrapper>} />
-        <Route path="/datacenter" component={() => <PageWrapper><DataCenter /></PageWrapper>} />
-        <Route path="/organizations" component={() => <PageWrapper><Organizations /></PageWrapper>} />
-        <Route component={() => <PageWrapper><NotFound /></PageWrapper>} />
-      </Switch>
-    </AnimatePresence>
+    <DirectionCtx.Provider value={dir}>
+      <AnimatePresence mode="wait" initial={false}>
+        <Switch location={location} key={location}>
+          <Route path="/"              component={() => <PageWrapper><Home /></PageWrapper>} />
+          <Route path="/login"         component={() => <PageWrapper><Login /></PageWrapper>} />
+          <Route path="/register"      component={() => <PageWrapper><Register /></PageWrapper>} />
+          <Route path="/dashboard"     component={() => <PageWrapper><Dashboard /></PageWrapper>} />
+          <Route path="/products"      component={() => <PageWrapper><Products /></PageWrapper>} />
+          <Route path="/dedicated"     component={() => <PageWrapper><Dedicated /></PageWrapper>} />
+          <Route path="/cloud"         component={() => <PageWrapper><Cloud /></PageWrapper>} />
+          <Route path="/colocation"    component={() => <PageWrapper><Colocation /></PageWrapper>} />
+          <Route path="/about"         component={() => <PageWrapper><About /></PageWrapper>} />
+          <Route path="/contact"       component={() => <PageWrapper><Contact /></PageWrapper>} />
+          <Route path="/status"        component={() => <PageWrapper><Status /></PageWrapper>} />
+          <Route path="/payment"       component={() => <PageWrapper><Payment /></PageWrapper>} />
+          <Route path="/ai"            component={() => <PageWrapper><AIPage /></PageWrapper>} />
+          <Route path="/datacenter"    component={() => <PageWrapper><DataCenter /></PageWrapper>} />
+          <Route path="/organizations" component={() => <PageWrapper><Organizations /></PageWrapper>} />
+          <Route component={() => <PageWrapper><NotFound /></PageWrapper>} />
+        </Switch>
+      </AnimatePresence>
+    </DirectionCtx.Provider>
   );
 }
 
 function App() {
-  // Force dark mode for this specific enterprise aesthetic
   useEffect(() => {
     document.documentElement.classList.add("dark");
   }, []);
