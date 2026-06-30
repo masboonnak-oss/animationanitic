@@ -6,7 +6,6 @@ import NotFound from "@/pages/not-found";
 import { useEffect, useRef, useState, createContext, useContext } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 
-import { CustomCursor } from "@/components/ui/CustomCursor";
 import { CircularNav } from "@/components/ui/CircularNav";
 import { AIAssistant } from "@/components/ui/AIAssistant";
 
@@ -44,71 +43,35 @@ const queryClient = new QueryClient();
  *                              /register (-0.5,1.5)
  *                              /dashboard (2.5,0)
  */
-const PAGE_POSITIONS: Record<string, [number, number]> = {
-  "/":              [0,    0   ],
-  "/products":      [1,    0   ],
-  "/dedicated":     [2,    0   ],
-  "/cloud":         [1,   -0.5 ],
-  "/colocation":    [1.5,  0.5 ],
-  "/payment":       [-1.5, 0   ],
-  "/ai":            [0,   -1   ],
-  "/datacenter":    [0.5, -1   ],
-  "/organizations": [-1,   0.5 ],
-  "/about":         [0,    1   ],
-  "/contact":       [1,    1   ],
-  "/status":        [-0.5,-2   ],
-  "/login":         [-1,   0   ],
-  "/register":      [-0.5, 1.5 ],
-  "/dashboard":     [2.5,  0   ],
-};
-
-function getSlideDir(from: string, to: string): [number, number] {
-  const [fx, fy] = PAGE_POSITIONS[from] ?? [0, 0];
-  const [tx, ty] = PAGE_POSITIONS[to]   ?? [0, 0];
-  let dx = tx - fx;
-  let dy = ty - fy;
-  const mag = Math.sqrt(dx * dx + dy * dy) || 1;
-  return [dx / mag, dy / mag];
-}
-
-const DirectionCtx = createContext<[number, number]>([1, 0]);
-
-const SLIDE_VW = 60;
-const SLIDE_VH = 60;
-
 function PageWrapper({ children }: { children: React.ReactNode }) {
-  const [dx, dy] = useContext(DirectionCtx);
-
   return (
     <motion.div
       initial={{
-        x: `${dx * SLIDE_VW}vw`,
-        y: `${dy * SLIDE_VH}vh`,
+        x: "100%",
         opacity: 0,
-        scale: 0.94,
-        rotateY: dx * 6,
-        rotateX: -dy * 4,
+        scale: 0.97,
+        rotateY: 6,
       }}
       animate={{
-        x: 0, y: 0, opacity: 1, scale: 1, rotateY: 0, rotateX: 0,
+        x: 0,
+        opacity: 1,
+        scale: 1,
+        rotateY: 0,
       }}
       exit={{
-        x: `${-dx * SLIDE_VW}vw`,
-        y: `${-dy * SLIDE_VH}vh`,
+        x: "-18%",
         opacity: 0,
-        scale: 0.94,
-        rotateY: -dx * 6,
-        rotateX: dy * 4,
+        scale: 0.91,
+        rotateY: -4,
       }}
       transition={{
         type: "spring",
-        stiffness: 260,
-        damping: 26,
-        mass: 0.9,
-        opacity: { duration: 0.18, ease: "easeOut" },
-        scale:   { duration: 0.35, ease: "easeOut" },
+        stiffness: 320,
+        damping: 32,
+        mass: 0.85,
+        opacity: { duration: 0.15, ease: "easeOut" },
       }}
-      style={{ perspective: "1400px", transformStyle: "preserve-3d" }}
+      style={{ perspective: "1200px", transformOrigin: "left center" }}
       className="w-full min-h-screen"
     >
       {children}
