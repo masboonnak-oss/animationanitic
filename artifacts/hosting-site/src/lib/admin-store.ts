@@ -65,7 +65,8 @@ const PRODUCTS_KEY = "sovereign.admin.products";
 const ACTIONS_KEY = "sovereign.admin.actions";
 
 export const DEFAULT_PAGES: EditablePage[] = [
-  { path: "/", name: "Home", title: "Sovereign Infrastructure", description: "Enterprise hosting, payments, AI, and data center solutions.", published: true, updatedAt: new Date().toISOString() },
+  { path: "/", name: "Orbit (Home)", title: "Orbit Navigation", description: "Immersive rotating circular page navigator — the site entry point.", published: true, updatedAt: new Date().toISOString() },
+  { path: "/home", name: "Home", title: "Sovereign Infrastructure", description: "Enterprise hosting, payments, AI, and data center solutions.", published: true, updatedAt: new Date().toISOString() },
   { path: "/products", name: "Hosting", title: "Cloud VPS", description: "High-performance virtual servers and compute products.", published: true, updatedAt: new Date().toISOString() },
   { path: "/dedicated", name: "Dedicated", title: "Dedicated Servers", description: "Bare metal infrastructure for intensive workloads.", published: true, updatedAt: new Date().toISOString() },
   { path: "/cloud", name: "Cloud", title: "Cloud Solutions", description: "Private, hybrid, and multi-cloud fabric.", published: true, updatedAt: new Date().toISOString() },

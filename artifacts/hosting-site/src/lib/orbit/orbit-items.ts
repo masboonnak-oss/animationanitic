@@ -28,7 +28,7 @@ export interface OrbitItem {
  * Add/remove entries here to change the wheel — no other code changes needed.
  */
 export const ORBIT_ITEMS: OrbitItem[] = [
-  { id: "home", title: "Home", subtitle: "The Sovereign platform overview.", href: "/", icon: Home, accent: "#ffffff" },
+  { id: "home", title: "Home", subtitle: "The Sovereign platform overview.", href: "/home", icon: Home, accent: "#ffffff" },
   { id: "hosting", title: "Hosting", subtitle: "Cloud VPS, dedicated compute & scalable infrastructure.", href: "/products", icon: Server, accent: "#00d4ff" },
   { id: "payment", title: "Payment", subtitle: "Global payment gateway with instant settlement.", href: "/payment", icon: CreditCard, accent: "#00ffcc" },
   { id: "topup", title: "Top-Up", subtitle: "Slip-verified wallet recharge & reconciliation.", href: "/topup", icon: Wallet, accent: "#34f5c5" },

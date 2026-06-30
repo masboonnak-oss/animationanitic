@@ -5,8 +5,8 @@ import { ArrowUpRight, Orbit, Home, Server, CreditCard, Brain, Database, Buildin
 import { LogoDecor } from "@/components/ui/LogoDecor";
 
 const NAV_ITEMS = [
-  { icon: Home, label: "Home", href: "/", summary: "Return to the main platform overview.", accent: "#ffffff", shapes: ["square", "triangle", "line"] },
-  { icon: Orbit, label: "Orbit", href: "/orbit", summary: "Immersive rotating circular page navigator.", accent: "#9b59ff", shapes: ["triangle", "square", "line"] },
+  { icon: Orbit, label: "Orbit", href: "/", summary: "Immersive rotating circular page navigator (home).", accent: "#9b59ff", shapes: ["triangle", "square", "line"] },
+  { icon: Home, label: "Home", href: "/home", summary: "The main platform overview page.", accent: "#ffffff", shapes: ["square", "triangle", "line"] },
   { icon: Server, label: "Hosting", href: "/products", summary: "Cloud VPS, dedicated compute, and scalable infrastructure plans.", accent: "#00d4ff", shapes: ["triangle", "square", "line"] },
   { icon: CreditCard, label: "Payment", href: "/payment", summary: "Payment gateway, settlement, fraud control, and billing demo.", accent: "#00ffcc", shapes: ["square", "line", "triangle"] },
   { icon: Brain, label: "AI Platform", href: "/ai", summary: "Automation, insight, and assistant workflows for teams.", accent: "#9b59ff", shapes: ["triangle", "line", "square"] },

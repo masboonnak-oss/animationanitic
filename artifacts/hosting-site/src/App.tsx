@@ -38,6 +38,7 @@ const DirectionCtx = createContext<Direction>([1, 0]);
 
 const pagePositions: Record<string, Direction> = {
   "/": [0, 0],
+  "/home": [0, 1],
   "/products": [0, -1],
   "/dedicated": [0, -2],
   "/cloud": [1, -2],
@@ -176,7 +177,8 @@ function Router() {
     <DirectionCtx.Provider value={dir}>
       <AnimatePresence mode="wait" initial={false}>
         <Switch location={location} key={location}>
-          <Route path="/"              component={() => <PageWrapper><Home /></PageWrapper>} />
+          <Route path="/"              component={() => <PageWrapper><Orbit /></PageWrapper>} />
+          <Route path="/home"          component={() => <PageWrapper><Home /></PageWrapper>} />
           <Route path="/login"         component={() => <PageWrapper><Login /></PageWrapper>} />
           <Route path="/register"      component={() => <PageWrapper><Register /></PageWrapper>} />
           <Route path="/dashboard"     component={() => <PageWrapper><Dashboard /></PageWrapper>} />

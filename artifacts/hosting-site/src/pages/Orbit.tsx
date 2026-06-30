@@ -34,9 +34,9 @@ export default function Orbit() {
 
       {/* Top bar */}
       <header className="absolute inset-x-0 top-0 z-50 flex items-center justify-between px-5 py-5 sm:px-8">
-        <Link href="/" className="group inline-flex items-center gap-2 text-sm text-white/60 hover:text-white">
+        <Link href="/home" className="group inline-flex items-center gap-2 text-sm text-white/60 hover:text-white">
           <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-0.5" />
-          Exit orbit
+          Enter site
         </Link>
         <span className="text-[11px] uppercase tracking-[0.34em] text-white/40">Sovereign · Orbit</span>
         <span className="w-[72px]" aria-hidden="true" />
