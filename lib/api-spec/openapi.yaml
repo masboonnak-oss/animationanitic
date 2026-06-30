@@ -1,22 +1,30 @@
 openapi: 3.1.0
 info:
-  # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: Enterprise Hosting Platform API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: auth
+    description: Authentication
+  - name: servers
+    description: Server management
+  - name: billing
+    description: Billing and invoices
+  - name: support
+    description: Support tickets
+  - name: stats
+    description: Usage statistics and platform stats
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
       summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
@@ -24,13 +32,479 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /auth/login:
+    post:
+      operationId: login
+      tags: [auth]
+      summary: Login with email and password
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginInput"
+      responses:
+        "200":
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "401":
+          description: Invalid credentials
+
+  /auth/register:
+    post:
+      operationId: register
+      tags: [auth]
+      summary: Register new account
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegisterInput"
+      responses:
+        "201":
+          description: Registration successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+
+  /auth/me:
+    get:
+      operationId: getMe
+      tags: [auth]
+      summary: Get current user
+      responses:
+        "200":
+          description: Current user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+
+  /auth/logout:
+    post:
+      operationId: logout
+      tags: [auth]
+      summary: Logout
+      responses:
+        "200":
+          description: Logged out
+
+  /servers:
+    get:
+      operationId: listServers
+      tags: [servers]
+      summary: List user servers
+      responses:
+        "200":
+          description: List of servers
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Server"
+    post:
+      operationId: createServer
+      tags: [servers]
+      summary: Create a new server
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ServerInput"
+      responses:
+        "201":
+          description: Server created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Server"
+
+  /servers/{id}:
+    get:
+      operationId: getServer
+      tags: [servers]
+      summary: Get server by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Server details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Server"
+
+  /servers/{id}/usage:
+    get:
+      operationId: getServerUsage
+      tags: [servers]
+      summary: Get server resource usage
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Server usage stats
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ServerUsage"
+
+  /billing/invoices:
+    get:
+      operationId: listInvoices
+      tags: [billing]
+      summary: List invoices
+      responses:
+        "200":
+          description: List of invoices
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Invoice"
+
+  /billing/summary:
+    get:
+      operationId: getBillingSummary
+      tags: [billing]
+      summary: Get billing summary
+      responses:
+        "200":
+          description: Billing summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BillingSummary"
+
+  /support/tickets:
+    get:
+      operationId: listTickets
+      tags: [support]
+      summary: List support tickets
+      responses:
+        "200":
+          description: List of tickets
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Ticket"
+    post:
+      operationId: createTicket
+      tags: [support]
+      summary: Create a support ticket
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TicketInput"
+      responses:
+        "201":
+          description: Ticket created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Ticket"
+
+  /stats/platform:
+    get:
+      operationId: getPlatformStats
+      tags: [stats]
+      summary: Get global platform statistics
+      responses:
+        "200":
+          description: Platform stats
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PlatformStats"
+
+  /stats/dashboard:
+    get:
+      operationId: getDashboardSummary
+      tags: [stats]
+      summary: Get dashboard summary for current user
+      responses:
+        "200":
+          description: Dashboard summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DashboardSummary"
+
+  /stats/usage-history:
+    get:
+      operationId: getUsageHistory
+      tags: [stats]
+      summary: Get 30-day usage history for charts
+      responses:
+        "200":
+          description: Usage history
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/UsageDataPoint"
+
 components:
   schemas:
     HealthStatus:
       type: object
+      required: [status]
       properties:
         status:
           type: string
-      required:
-        - status
 
+    LoginInput:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+        rememberMe:
+          type: boolean
+
+    RegisterInput:
+      type: object
+      required: [name, email, password]
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+
+    AuthResponse:
+      type: object
+      required: [user, token]
+      properties:
+        user:
+          $ref: "#/components/schemas/User"
+        token:
+          type: string
+
+    User:
+      type: object
+      required: [id, name, email, role, createdAt]
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        email:
+          type: string
+        role:
+          type: string
+          enum: [admin, reseller, customer]
+        createdAt:
+          type: string
+          format: date-time
+
+    Server:
+      type: object
+      required: [id, name, type, status, ip, location, cpu, ram, disk, bandwidth, createdAt]
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        type:
+          type: string
+          enum: [vps, dedicated, gpu, cloud, storage, kubernetes]
+        status:
+          type: string
+          enum: [running, stopped, provisioning, suspended]
+        ip:
+          type: string
+        location:
+          type: string
+        cpu:
+          type: integer
+        ram:
+          type: integer
+        disk:
+          type: integer
+        bandwidth:
+          type: integer
+        monthlyCost:
+          type: number
+        createdAt:
+          type: string
+          format: date-time
+
+    ServerInput:
+      type: object
+      required: [name, type, location, cpu, ram, disk]
+      properties:
+        name:
+          type: string
+        type:
+          type: string
+        location:
+          type: string
+        cpu:
+          type: integer
+        ram:
+          type: integer
+        disk:
+          type: integer
+
+    ServerUsage:
+      type: object
+      required: [serverId, cpu, ram, bandwidth, disk]
+      properties:
+        serverId:
+          type: integer
+        cpu:
+          type: number
+        ram:
+          type: number
+        bandwidth:
+          type: number
+        disk:
+          type: number
+        timestamp:
+          type: string
+          format: date-time
+
+    Invoice:
+      type: object
+      required: [id, amount, status, period, createdAt, dueDate]
+      properties:
+        id:
+          type: integer
+        invoiceNumber:
+          type: string
+        amount:
+          type: number
+        status:
+          type: string
+          enum: [paid, pending, overdue, cancelled]
+        period:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        dueDate:
+          type: string
+          format: date-time
+
+    BillingSummary:
+      type: object
+      required: [currentMonthTotal, nextInvoiceDate, activeServers, paymentMethod]
+      properties:
+        currentMonthTotal:
+          type: number
+        nextInvoiceDate:
+          type: string
+          format: date-time
+        activeServers:
+          type: integer
+        paymentMethod:
+          type: string
+        creditBalance:
+          type: number
+
+    Ticket:
+      type: object
+      required: [id, subject, status, priority, createdAt]
+      properties:
+        id:
+          type: integer
+        subject:
+          type: string
+        status:
+          type: string
+          enum: [open, in_progress, resolved, closed]
+        priority:
+          type: string
+          enum: [low, medium, high, critical]
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    TicketInput:
+      type: object
+      required: [subject, description, priority]
+      properties:
+        subject:
+          type: string
+        description:
+          type: string
+        priority:
+          type: string
+
+    PlatformStats:
+      type: object
+      required: [uptime, protection, locations, servers]
+      properties:
+        uptime:
+          type: string
+        protection:
+          type: string
+        locations:
+          type: integer
+        servers:
+          type: integer
+
+    DashboardSummary:
+      type: object
+      required: [totalServers, runningServers, monthlySpend, openTickets, bandwidth]
+      properties:
+        totalServers:
+          type: integer
+        runningServers:
+          type: integer
+        monthlySpend:
+          type: number
+        openTickets:
+          type: integer
+        bandwidth:
+          type: number
+        cpuAvg:
+          type: number
+        ramAvg:
+          type: number
+
+    UsageDataPoint:
+      type: object
+      required: [date, cpu, ram, bandwidth, disk]
+      properties:
+        date:
+          type: string
+        cpu:
+          type: number
+        ram:
+          type: number
+        bandwidth:
+          type: number
+        disk:
+          type: number

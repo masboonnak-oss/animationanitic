@@ -1,0 +1,421 @@
+Build an Enterprise-grade Hosting Company Website.
+
+Theme:
+Minimal, Luxury, Futuristic.
+
+Reference Design:
+Use the uploaded image as inspiration.
+The homepage should use geometric cards with rounded corners.
+Cards should slide horizontally infinitely with smooth easing.
+Everything should feel premium like Apple + Stripe + Linear + Vercel.
+
+==================================
+TECH STACK
+==================================
+
+Next.js
+React
+TailwindCSS
+Framer Motion
+GSAP
+TypeScript
+App Router
+
+==================================
+LAYOUT
+==================================
+
+Separate pages.
+
+/
+Landing Page
+
+/login
+User Login
+
+/register
+Register
+
+/dashboard
+Customer Dashboard
+
+/products
+VPS
+
+/dedicated
+
+/cloud
+
+/colocation
+
+/about
+
+/contact
+
+/status
+
+==================================
+LANDING PAGE
+==================================
+
+Transparent Navbar
+
+Logo
+
+Products
+
+Solutions
+
+Pricing
+
+Support
+
+Login Button
+
+Get Started Button
+
+Hero Section
+
+Dark gradient background
+
+Animated geometric cards
+
+Cards move horizontally forever
+
+Mouse Parallax
+
+Floating light
+
+Blur effect
+
+Smooth motion
+
+Large title
+
+Enterprise Cloud Infrastructure
+
+Subtitle
+
+Deploy enterprise VPS, Dedicated Servers, GPU Servers and Cloud Solutions worldwide.
+
+Buttons
+
+Start Now
+
+Pricing
+
+==================================
+ANIMATED GEOMETRY
+
+Create cards similar to the uploaded image.
+
+White cards
+
+Dark cards
+
+Diamond
+
+Triangle
+
+Line
+
+Circle
+
+Square
+
+Hexagon
+
+Each card slowly rotates
+
+Slides continuously
+
+Hover expands
+
+Glow effect
+
+Mouse interaction
+
+==================================
+SECTIONS
+
+Why choose us
+
+Animated statistics
+
+99.99% Uptime
+
+120Tbps Protection
+
+18 Global Locations
+
+5000+ Servers
+
+==================================
+
+Products
+
+Luxury cards
+
+Cloud VPS
+
+GPU Server
+
+Dedicated
+
+Storage
+
+Kubernetes
+
+==================================
+
+Infrastructure
+
+World map
+
+Animated connection lines
+
+Datacenter locations
+
+==================================
+
+Pricing
+
+Luxury pricing table
+
+==================================
+
+Testimonials
+
+Glass cards
+
+Auto sliding
+
+==================================
+
+Footer
+
+Minimal
+
+==================================
+LOGIN PAGE
+==================================
+
+Separate page.
+
+Luxury.
+
+Dark background.
+
+Glassmorphism login box.
+
+Animated geometric background.
+
+Email
+
+Password
+
+Remember me
+
+Forgot Password
+
+Login
+
+Continue with Google
+
+Continue with GitHub
+
+Animated gradient border
+
+==================================
+REGISTER PAGE
+==================================
+
+Same design
+
+Name
+
+Email
+
+Password
+
+Confirm Password
+
+==================================
+USER DASHBOARD
+==================================
+
+Modern SaaS Dashboard
+
+Sidebar
+
+Home
+
+Servers
+
+Billing
+
+Invoices
+
+Support
+
+Settings
+
+Notifications
+
+Usage Graph
+
+CPU
+
+RAM
+
+Bandwidth
+
+Disk
+
+==================================
+UI STYLE
+
+Rounded 28px
+
+Soft shadows
+
+Large spacing
+
+Premium typography
+
+Smooth animations
+
+Every hover animated
+
+Fade
+
+Scale
+
+Slide
+
+Glow
+
+==================================
+COLORS
+
+Background
+
+#F8F8F6
+
+Dark
+
+#111111
+
+Primary
+
+#000000
+
+Secondary
+
+#F1F1F1
+
+Accent
+
+#D7D7D7
+
+==================================
+TYPOGRAPHY
+
+Inter
+
+SF Pro Display
+
+Space Grotesk
+
+==================================
+ANIMATION
+
+Framer Motion
+
+Spring animations
+
+Mouse tracking
+
+Card rotation
+
+Infinite slider
+
+Page transitions
+
+Loading animation
+
+Skeleton loading
+
+==================================
+PERFORMANCE
+
+Lazy Loading
+
+Image Optimization
+
+SEO Ready
+
+Responsive
+
+SSR
+
+Metadata
+
+Accessibility
+
+==================================
+AUTH
+
+JWT
+
+Secure Login
+
+Protected Dashboard
+
+==================================
+DATABASE
+
+PostgreSQL
+
+Prisma ORM
+
+==================================
+ADMIN READY
+
+Prepare role system
+
+Admin
+
+Reseller
+
+Customer
+
+==================================
+CODE QUALITY
+
+Enterprise Architecture
+
+Reusable Components
+
+Clean Folder Structure
+
+TypeScript
+
+Well Documented
+
+==================================
+RESULT
+
+The final website must feel like a premium billion-dollar hosting company.
+
+Animation quality similar to Apple.com.
+
+Motion quality similar to Linear.app.
+
+Performance optimized.
+
+Pixel perfect.
+
+No cheap templates.
+
+Everything custom-built.

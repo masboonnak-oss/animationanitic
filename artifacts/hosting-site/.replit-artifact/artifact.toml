@@ -1,0 +1,31 @@
+kind = "web"
+previewPath = "/"
+title = "Enterprise Hosting"
+version = "1.0.0"
+id = "artifacts/hosting-site"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 22296
+
+[services.development]
+run = "pnpm --filter @workspace/hosting-site run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/hosting-site", "run", "build" ]
+publicDir = "artifacts/hosting-site/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "22296"
+BASE_PATH = "/"
