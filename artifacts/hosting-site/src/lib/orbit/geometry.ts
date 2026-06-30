@@ -1,46 +1,45 @@
 /**
- * Pure orbit geometry — maps a panel index + the continuous rotation value to a
- * transform on a circular orbit. No React, no DOM.
+ * Pure cover-flow geometry — maps a card index + the continuous rotation value
+ * to a transform on a horizontal billboard carousel. No React, no DOM.
  *
- * Layout (matches the "rotating circular navigation" reference):
- *   - panels are placed around a circle centered on a fixed pivot,
- *   - the panel whose index equals `rotation` sits at the TOP (phi = 0) and is
- *     the active/focused page,
- *   - the others fan around the ring; the farther from the top, the smaller,
- *     dimmer and more blurred (the bottom panel is the least prominent).
+ * Layout (matches the reference: rotate left↔right along X):
+ *   - the card whose index equals `rotation` sits dead CENTER, facing the
+ *     viewer, and is MUCH larger than the rest,
+ *   - the others fan out to the left and right (signed offset), shrinking,
+ *     dimming, receding in depth and blurring the farther they are,
+ *   - all cards stay billboarded (no Y-flip) so they always face the user.
  *
- * A slight vertical foreshortening (radiusY < radiusX) plus a small forward
- * "pop" (translateZ) on the active panel gives premium 3D depth without a real
- * camera. `rotation` is unbounded, so the wheel spins infinitely both ways.
+ * `rotation` is unbounded → the carousel spins infinitely both directions; the
+ * signed offset wraps so a card leaving one side reappears on the other while
+ * invisible at the back.
  */
 
 export interface OrbitGeometryConfig {
-  /** Horizontal orbit radius, px. */
-  radiusX: number;
-  /** Vertical orbit radius, px (smaller than radiusX for perspective). */
-  radiusY: number;
-  /** Forward translateZ applied to the active (top) panel, px. */
-  popZ: number;
-  /** Scale of the least-prominent (bottom) panel. */
+  /** Half-width the side cards spread to, px. */
+  spreadX: number;
+  /** How far back the side cards recede, px. */
+  depth: number;
+  /** Scale/opacity falloff rate with distance from center (higher = sharper). */
+  falloff: number;
+  /** Horizontal spread compression (tanh rate). */
+  compression: number;
+  /** Scale of the farthest card. */
   minScale: number;
-  /** Scale of the active (top) panel. */
+  /** Scale of the centered (focused) card. */
   maxScale: number;
-  /** Opacity floor for the bottom panel. */
+  /** Opacity floor for the farthest card. */
   minOpacity: number;
-  /** Max depth blur (px) on the bottom panel. */
+  /** Max depth blur (px) on the farthest card. */
   maxBlur: number;
 }
 
 export interface PanelTransform {
-  /** Angle on the orbit, radians. 0 = top/active. */
-  phi: number;
-  /** Horizontal offset from center, px. */
+  /** Signed distance from center, in card steps (0 = centered). */
+  offset: number;
   x: number;
-  /** Vertical offset from center, px (negative = up). */
   y: number;
-  /** Forward depth, px. */
   z: number;
-  /** 1 at top (active) → 0 at bottom. Drives scale/opacity/blur/z-index. */
+  /** 1 at center → 0 at the back. Drives scale/opacity/blur/z-index. */
   prominence: number;
   scale: number;
   opacity: number;
@@ -49,51 +48,58 @@ export interface PanelTransform {
 }
 
 export const DEFAULT_GEOMETRY: OrbitGeometryConfig = {
-  radiusX: 360,
-  radiusY: 280,
-  popZ: 120,
-  minScale: 0.62,
+  spreadX: 460,
+  depth: 320,
+  falloff: 1.0,
+  compression: 0.52,
+  minScale: 0.4,
   maxScale: 1,
-  minOpacity: 0.16,
-  maxBlur: 6,
+  minOpacity: 0.05,
+  maxBlur: 4,
 };
 
-/** Compute the transform for one panel at the given continuous rotation. */
+/** Wrap a step offset to the nearest equivalent in [-count/2, count/2]. */
+function wrapOffset(v: number, count: number): number {
+  let d = (((v % count) + count) % count); // 0..count
+  if (d > count / 2) d -= count; // -count/2..count/2
+  return d;
+}
+
+/** Compute the transform for one card at the given continuous rotation. */
 export function computePanel(
   index: number,
   count: number,
   rotation: number,
   cfg: OrbitGeometryConfig,
 ): PanelTransform {
-  const step = (Math.PI * 2) / count;
-  const phi = (index - rotation) * step;
-  const sin = Math.sin(phi);
-  const cos = Math.cos(phi);
+  const d = wrapOffset(index - rotation, count);
+  const ad = Math.abs(d);
 
-  // prominence: 1 at the top (phi = 0), 0 at the bottom (phi = ±π).
-  const prominence = (cos + 1) / 2;
+  // focus: 1 at center, decaying exponentially with distance — this is what
+  // makes the centered card dramatically larger than its neighbors.
+  const focus = Math.exp(-ad * cfg.falloff);
 
-  const x = sin * cfg.radiusX;
-  const y = -cos * cfg.radiusY; // phi = 0 → -radiusY (top)
-  const z = prominence * cfg.popZ;
+  // tanh spread: near cards separate clearly; far cards saturate at the edge.
+  const x = Math.tanh(d * cfg.compression) * cfg.spreadX;
+  const y = 0;
+  const z = -(1 - Math.exp(-ad * 0.7)) * cfg.depth;
 
-  const scale = cfg.minScale + (cfg.maxScale - cfg.minScale) * prominence;
-  const opacity = cfg.minOpacity + (1 - cfg.minOpacity) * Math.pow(prominence, 1.3);
-  const blur = (1 - prominence) * cfg.maxBlur;
-  const zIndex = Math.round(prominence * 1000);
+  const scale = cfg.minScale + (cfg.maxScale - cfg.minScale) * focus;
+  const opacity = cfg.minOpacity + (1 - cfg.minOpacity) * Math.pow(focus, 0.9);
+  const blur = (1 - focus) * cfg.maxBlur;
+  const zIndex = Math.round(focus * 1000);
 
-  return { phi, x, y, z, prominence, scale, opacity, blur, zIndex };
+  return { offset: d, x, y, z, prominence: focus, scale, opacity, blur, zIndex };
 }
 
-/** Which index is currently at the top / focused. */
+/** Which index is currently centered / focused. */
 export function activeIndexOf(rotation: number, count: number): number {
   return ((Math.round(rotation) % count) + count) % count;
 }
 
 /**
- * Nearest rotation target that brings `index` to the top, taking the shortest
- * path around the ring from the current rotation (so clicking a panel never
- * unwinds the long way around).
+ * Nearest rotation target that brings `index` to center, taking the shortest
+ * path around the carousel from the current rotation.
  */
 export function shortestTarget(rotation: number, index: number, count: number): number {
   const base = Math.round(rotation);

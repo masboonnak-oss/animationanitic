@@ -140,7 +140,9 @@ export function useOrbitController(opts: OrbitControllerOptions) {
       el.style.opacity = opacity.toFixed(3);
       el.style.zIndex = String(p.zIndex + (isActive ? 1 : 0));
       el.style.filter = blur > 0.08 ? `blur(${blur.toFixed(2)}px)` : "";
-      el.style.pointerEvents = p.prominence > 0.55 ? "auto" : "none";
+      // Clickable while reasonably visible so side cards can be selected to
+      // rotate them to center; fully-receded (invisible) cards are inert.
+      el.style.pointerEvents = p.prominence > 0.06 ? "auto" : "none";
     });
 
     onFrameRef.current?.(rotation.current, velocity.current);
@@ -270,13 +272,12 @@ export function useOrbitController(opts: OrbitControllerOptions) {
     const el = containerRef.current;
     if (!el) return;
     const w = el.clientWidth;
-    const h = el.clientHeight;
     geo.current = {
       ...geo.current,
-      radiusX: Math.max(150, Math.min(w * 0.3, 440)),
-      radiusY: Math.max(110, Math.min(h * 0.26, 300)),
+      spreadX: Math.max(220, Math.min(w * 0.34, 560)),
+      depth: Math.max(180, Math.min(w * 0.22, 380)),
     };
-    dragStep.current = Math.max(60, Math.min(w * 0.12, 180));
+    dragStep.current = Math.max(70, Math.min(w * 0.16, 220));
     applyFrame();
   }, [applyFrame]);
 

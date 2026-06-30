@@ -232,6 +232,99 @@ body::after {
   animation: orbit-bloom-pulse 7s ease-in-out infinite;
 }
 
+/* ── Living card layers ──────────────────────────────────────── */
+
+/* Layer 2: float up/down + gentle swing */
+@keyframes orbit-float {
+  0%, 100% { transform: translateY(3px) rotate(-2.2deg); }
+  50% { transform: translateY(-5px) rotate(2.2deg); }
+}
+.orbit-float {
+  animation: orbit-float 6s ease-in-out infinite;
+}
+
+/* Layer 3: slow self-rotation + breathing scale */
+@keyframes orbit-breathe {
+  0%, 100% { transform: rotate(-1.4deg) scale(0.99); }
+  50% { transform: rotate(1.4deg) scale(1.012); }
+}
+.orbit-breathe {
+  animation: orbit-breathe 5s ease-in-out infinite;
+}
+
+/* Layer 4: hover 3D tilt (transform set imperatively in JS) */
+.orbit-tilt {
+  transform-style: preserve-3d;
+  transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Breathing glow */
+@keyframes orbit-glow-breathe {
+  0%, 100% { opacity: 0.3; transform: scale(0.95); }
+  50% { opacity: 0.62; transform: scale(1.06); }
+}
+.orbit-glow {
+  animation: orbit-glow-breathe 4.5s ease-in-out infinite;
+}
+.group:hover .orbit-glow {
+  opacity: 0.75;
+}
+
+/* Sweeping border light */
+@keyframes orbit-border-sweep {
+  to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+.orbit-border-sweep {
+  animation: orbit-border-sweep 6s linear infinite;
+  opacity: 0.5;
+}
+
+/* Moving reflection */
+@keyframes orbit-reflection-move {
+  0% { transform: translateX(-180%) skewX(-16deg); }
+  60%, 100% { transform: translateX(360%) skewX(-16deg); }
+}
+.orbit-reflection {
+  background: linear-gradient(105deg, transparent, rgba(255, 255, 255, 0.16), transparent);
+  animation: orbit-reflection-move 7s ease-in-out infinite;
+}
+
+/* Focused-card particles */
+@keyframes orbit-particle-float {
+  0% { transform: translateY(0) scale(1); opacity: 0; }
+  20% { opacity: 0.9; }
+  100% { transform: translateY(-46px) scale(0.4); opacity: 0; }
+}
+.orbit-particle {
+  position: absolute;
+  height: 4px;
+  width: 4px;
+  border-radius: 9999px;
+  pointer-events: none;
+  filter: blur(0.3px);
+  animation: orbit-particle-float 3.4s ease-in-out infinite;
+}
+
+/* Mobile: drop the most expensive sweeps to protect frame rate */
+@media (max-width: 640px) {
+  .orbit-border-sweep,
+  .orbit-reflection {
+    animation: none;
+    opacity: 0.25;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .orbit-float,
+  .orbit-breathe,
+  .orbit-glow,
+  .orbit-border-sweep,
+  .orbit-reflection,
+  .orbit-particle {
+    animation: none !important;
+  }
+}
+
 .orbit-arrow {
   display: grid;
   place-items: center;

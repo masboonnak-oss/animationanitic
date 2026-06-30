@@ -109,6 +109,7 @@ export function OrbitNav({ items, onSelect }: OrbitNavProps) {
                 ref={getPanelRef(i)}
                 item={item}
                 isActive={active === i}
+                reduced={reduced}
                 onClick={() => handlePanelClick(i)}
               />
             ))}
