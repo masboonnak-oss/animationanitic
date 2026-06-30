@@ -7,10 +7,7 @@ export function Footer() {
         <div className="grid grid-cols-2 md:grid-cols-5 gap-8 mb-12">
           <div className="col-span-2 md:col-span-1">
             <div className="flex items-center space-x-3 mb-6">
-              <svg width="24" height="24" viewBox="0 0 28 28" fill="none">
-                <polygon points="14,2 26,8 26,20 14,26 2,20 2,8" fill="none" stroke="white" strokeWidth="1.5"/>
-                <polygon points="14,7 21,11 21,17 14,21 7,17 7,11" fill="white" fillOpacity="0.15"/>
-              </svg>
+              <img src="/sovereign-logo.png" alt="Sovereign Engine" className="h-8 w-8 object-contain invert" />
               <span className="font-display font-bold tracking-[0.2em] uppercase text-sm">Sovereign</span>
             </div>
             <p className="text-sm text-muted-foreground leading-relaxed">Enterprise-grade infrastructure, payments, and AI — unified under one platform.</p>

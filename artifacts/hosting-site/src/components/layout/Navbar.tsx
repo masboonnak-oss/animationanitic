@@ -6,10 +6,7 @@ export function Navbar() {
     <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-white/10 h-16 flex items-center px-6 lg:px-12">
       <div className="flex items-center space-x-8">
         <Link href="/" className="flex items-center space-x-3">
-          <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-            <polygon points="14,2 26,8 26,20 14,26 2,20 2,8" fill="none" stroke="white" strokeWidth="1.5"/>
-            <polygon points="14,7 21,11 21,17 14,21 7,17 7,11" fill="white" fillOpacity="0.15"/>
-          </svg>
+          <img src="/sovereign-logo.png" alt="Sovereign Engine" className="h-9 w-9 object-contain invert" />
           <span className="font-display font-bold text-lg tracking-[0.2em] uppercase">Sovereign</span>
         </Link>
         <div className="hidden md:flex space-x-6">

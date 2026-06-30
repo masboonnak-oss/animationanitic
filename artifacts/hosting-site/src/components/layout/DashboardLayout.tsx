@@ -32,10 +32,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
       <aside className="w-64 border-r border-white/10 bg-[#0a0a0a] flex flex-col">
         <div className="h-16 flex items-center px-6 border-b border-white/10 shrink-0">
           <Link href="/" className="flex items-center space-x-3">
-            <svg width="24" height="24" viewBox="0 0 28 28" fill="none">
-              <polygon points="14,2 26,8 26,20 14,26 2,20 2,8" fill="none" stroke="white" strokeWidth="1.5"/>
-              <polygon points="14,7 21,11 21,17 14,21 7,17 7,11" fill="white" fillOpacity="0.15"/>
-            </svg>
+            <img src="/sovereign-logo.png" alt="Sovereign Engine" className="h-8 w-8 object-contain invert" />
             <span className="font-display font-bold text-lg tracking-[0.2em] uppercase">Sovereign</span>
           </Link>
         </div>
